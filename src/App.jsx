@@ -4,7 +4,8 @@ function App() {
 
   const [input, setInput] = useState("");
   const [todos, setTodos] = useState([]);
-  const [editIndex, setEditIndex] = useState(null);
+  const [editingTask, setEditingTask] =
+    useState(null);
 
   // Add OR Update Todo
   const addTodo = () => {
@@ -14,32 +15,19 @@ function App() {
       return;
     }
 
-    // Update Todo
-    if (editIndex !== null) {
+    const newTodo = {
+      text: input,
+      completed: false,
+    };
 
-      const updatedTodos = [...todos];
-
-      updatedTodos[editIndex].text = input;
-
-      setTodos(updatedTodos);
-
-      setEditIndex(null);
-
-    } else {
-
-      // Add Todo
-      const newTodo = {
-        text: input,
-        completed: false,
-      };
-
-      setTodos([...todos, newTodo]);
-    }
+    setTodos([...todos, newTodo]);
 
     setInput("");
+
+    setEditingTask(null);
   };
 
-  // Line-through Todo
+  // Delete / Line-through
   const deleteTodo = (index) => {
 
     const updatedTodos = [...todos];
@@ -53,9 +41,29 @@ function App() {
   // Edit Todo
   const editTodo = (index) => {
 
-    setInput(todos[index].text);
+    let updatedTodos = [...todos];
 
-    setEditIndex(index);
+    // Return previous editing task
+    if (editingTask !== null) {
+      updatedTodos.push(editingTask);
+    }
+
+    // Selected task
+    const selectedTask = todos[index];
+
+    // Remove selected task
+    updatedTodos = updatedTodos.filter(
+      (todo) => todo !== selectedTask
+    );
+
+    // Store editing task
+    setEditingTask(selectedTask);
+
+    // Put task text into input
+    setInput(selectedTask.text);
+
+    // Update todos
+    setTodos(updatedTodos);
   };
 
   return (
@@ -69,7 +77,11 @@ function App() {
         fontFamily: "Arial",
       }}
     >
-      <h1 style={{ textAlign: "center" }}>
+      <h1
+        style={{
+          textAlign: "center",
+        }}
+      >
         Todo App
       </h1>
 
@@ -98,7 +110,7 @@ function App() {
           style={{
             padding: "10px",
             backgroundColor:
-              editIndex !== null
+              editingTask !== null
                 ? "orange"
                 : "green",
             color: "white",
@@ -106,7 +118,7 @@ function App() {
             cursor: "pointer",
           }}
         >
-          {editIndex !== null
+          {editingTask !== null
             ? "Update"
             : "Add"}
         </button>
@@ -127,7 +139,8 @@ function App() {
               marginBottom: "10px",
               padding: "10px",
               display: "flex",
-              justifyContent: "space-between",
+              justifyContent:
+                "space-between",
               alignItems: "center",
               borderRadius: "5px",
             }}
@@ -154,7 +167,8 @@ function App() {
                   editTodo(index)
                 }
                 style={{
-                  backgroundColor: "orange",
+                  backgroundColor:
+                    "orange",
                   color: "white",
                   border: "none",
                   padding: "5px 10px",
