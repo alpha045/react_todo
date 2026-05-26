@@ -9,6 +9,7 @@ function TodoForm({ addTodo }) {
     e.preventDefault();
 
     if (input.trim() === "") return;
+    console.log(input);
 
     addTodo(input);
 
